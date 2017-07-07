@@ -1,2 +1,2 @@
 # Purify
-Validate php assoc array by one line.
+Validate PHP associative array by one line.
