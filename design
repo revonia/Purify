@@ -1,0 +1,114 @@
+包装
+Wrap::purify(输入);
+输入可为：
+1. 只有一个类型为数组的参数，将此参数作为验证数组（input）。
+3. 无参数，验证数组为空数组。
+
+Wrap::purify(array('a' => 1))  	//input = array('a' => 1);
+Wrap::purify()  				//input = array();
+Wrap::purify('a', 'b')          // error
+Wrap::purify(array('a' => 1), array('b' => 2));  // input = array('a' => 1, 'b' => 2);
+
+extract 分解器&占位符
+$_ = Wrap::extract()
+
+$p('a', 'b')->eq(1, $_); //不对b进行映射
+
+$p($_($someArray))->condition($_($someArray)); //将$someArray分解
+
+指定keys
+$p(左输入)->push(左输入追加);
+左输入可为：
+1. 只有一个类型为数组的参数，且数组键为数字。将此参数作为keys数组。
+2. 参数个数大于等于1，将所有参数作为keys数组。
+3. 左输入为空,表示选择所有。
+4. keys数组键只能为数字。
+5. keys数组中，如果有null，则不对对应位置的映射进行处理。
+
+$p(array('a'))  	//keys = array('a');
+$p('a', 'b')  		//keys = array('a');
+$p('a')->push('b')  //keys = array('a', 'b');
+$p()  				//keys = all
+$p(array('a' => 1)) //error
+$p(null, 'a') 		//keys = array(null, 'a')
+
+
+使用condition
+$p(左输入)->condition(右输入);
+
+右输入可为：
+//1. 只有一个类型为数组的参数，且数组键为数字。将此参数作为映射数组(maps)。
+2. 只有一个类型为数组的参数，且数组键为keys数组中的键。将此参数作为映射数组，映射时按照此数组的键进行映射。
+3. 参数个数大于等于1，将所有参数作为映射数组。
+4. 只有一个类型不为数组的参数，将验证数组所有项目映射到这一个参数。
+
+$p('a')->condition(1);  							//maps = ['a' => 1]
+$p('a', 'b')->condition(array(1, 2));  				//maps = ['a' => 1, 'b' => 2]
+$p('a', 'b')->condition(array('b' => 1, 'a' => 2))  //maps = ['a' => 2, 'b' => 1]
+$p('a')->condition(1, 2); 							//error
+$p('a', 'b')->condition(1); 						//maps = ['a' => 1, 'b' => 1]
+$p('a', 'b', 'c')->condition(1, 2); 				//error
+$p('a', null)->condition(array(1), null); 			//maps = ['a' => array(1)]
+$p('a')->condition(array(1, 2)); 					//maps = ['a' => array(1, 2)]
+
+如果想要 maps = ['a' => array(1, 2)， 'b' => array(1, 2)] 可以
+$p('a')->condition(array(1, 2));
+$p('b')->condition(array(1, 2));
+
+
+
+keys数组和映射数组的长度关系
+count(keys) == count(map)  一一对应映射
+count(map) == 1 全部映射到map数组的唯一项。
+count(keys) != count(map) error
+
+
+condition可分为：
+映射condition：必须同时具有左右输入，将左输入映射到右输入。
+独立condition：只具有左输入，将右输入视为左输入追加。
+
+
+some修饰
+所有condition的通过条件为全体满足
+$p = Wrap::purify(array('a' => 1, 'b' => 2, 'c' => '', 'd' => true));
+$p('a', 'b')->eq(1, 2);  //通过  a b 与 1 2 对应相等
+$p('a', 'b')->eq(1, 3);  //失败  a b 与 1 3 对应相等
+
+使用some修饰可以改变为部分满足即通过
+$p('a', 'b')->some->eq(1, 3);  //通过 a b 与 1 3 至少有一个对应相等
+
+if ($j('a', 'b')->some->eq(1, 3)) {
+	$p('c', 'd')->some->valid();
+}
+
+if ($j('a')->valid()) $p('b')->valid();  //如果'a'有效，则要求 'b' 也有效
+
+each修饰
+用于修改映射关系，所有 keys 对应的input[keys]，每一项都映射到所有map进行验证，
+each后面只能接映射condition
+$p('a', 'b')->each->walk('is_numeric', 'is_int'); //通过  maps = ['a' => 'is_numeric', 'a' => 'is_int'] && ['b' => 'is_numeric', 'b' => 'is_int']
+$p('a', 'd')->each->walk('is_numeric', 'is_int'); //失败
+
+
+
+some each 混用
+最好some在前，each在后
+$p('a', 'd')->some->each->walk('is_numeric', 'is_int'); //通过  maps = ['a' => 'is_numeric', 'a' => 'is_int'] || ['b' => 'is_numeric', 'b' => 'is_int']
+$p('c', 'd')->some->each->walk('is_numeric', 'is_int'); //失败
+
+使用了each修饰后count(keys) != count(map)不再必定失败。
+
+
+elem修饰 单独使用
+对对应项数组中的每一项进行验证 elements
+
+
+input 待验证数组
+value 验证数组中的值
+key keys  数组的key
+callback
+symbol symbols 符号
+image 象
+
+
+

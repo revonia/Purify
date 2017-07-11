@@ -1,0 +1,145 @@
+$p = new Purify($input);
+$p->gate('a', 'b', 'c', 'd')->required();
+$p->gate()->required('a', 'b', 'c', 'd');
+
+$gate = Purify::_gate($input);
+$gate('a', 'b', 'c', 'd')->required();
+$gate()->required('a', 'b', 'c', 'd');
+
+$gate('allow')->ifVaild()->required('a', 'b', 'c', 'd');
+
+invaild
+空字符串、null、仅含有空白字符串(空格 \n\r\t\x0B\0)、空数组
+
+vaild
+数字0、字符串'0'、false、非全空白字符串
+
+
+======
+基础组
+
+required()
+req()
+eliminate()
+elim()
+
+accept()
+reject()
+
+======
+if 组
+
+if(条件)
+ifNot(条件)
+
+ifVaild()
+ifInvaild()
+
+ifTrue()
+ifFalse()
+
+ifSet()
+ifNull()
+
+ifEq(value)
+ifNeq(value)
+
+ifArray()
+ifNotArray()
+ifArrayAccess()
+
+ifInt()
+ifNotInt()
+
+ifNum()
+ifNotNum()
+
+ifGreater(num)  // >
+ifLess(num)  // <
+
+ifGreaterOrEq(num) // >=
+ifLessOrEq(num) // <=
+
+ifBetween(little, big) // little < x < big
+ifBetweenL(little, big) // little <= x < big
+ifBetweenR(little, big) // little < x <= big
+ifBetweenLR(little, big) // little <= x <= big
+
+ifBeside(little, big) // little < x < big
+ifBesideL(little, big) // little <= x < big
+ifBesideR(little, big) // little < x <= big
+ifBesideLR(little, big) // little <= x <= big
+
+
+=========
+P::required
+P::req
+P::elim
+P::eliminate
+
+P::requireIfVaild
+P::reqIfVaild
+P::requireIfInvaild
+P::reqIfInvaild
+P::elimIfvaild
+P::elimIfInvaild
+
+P::requireIfEq
+P::reqIfEq
+P::requireIfNeq
+P::reqIfNeq
+P::elimIfEq
+P::elimIfNeq
+
+P::arrayAccess
+
+P::equal
+P::eq
+P::notEqual
+P::neq
+
+P::is
+P::not
+P::isInt
+P::notInt
+P::isDecimal
+P::notDecimal
+P::isNumeric
+P::isNum
+P::notNumeric
+P::notNum
+P::isString
+P::isStr
+P::notString
+P::notStr
+P::isBool
+P::notBool
+P::isWord
+P::notWord
+
+P::matched
+P::unmatched
+
+P::lengthEq
+P::lenEq
+P::lengthNeq
+P::lenNeq
+P::lenGreater
+P::lenLess
+P::lenBetween
+P::lenBeside
+
+P::numBetween
+P::numBeside
+P::numGreater
+P::numLess
+
+P::in
+P::notIn
+
+P::callback
+P::negCallback
+
+P::equalExcept
+P::equalOnly
+
